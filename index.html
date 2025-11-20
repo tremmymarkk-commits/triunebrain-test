@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบประเมินแนวโน้มการทำงานของสมอง</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .instructions {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #3498db;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .question-text {
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+        .options {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .option {
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            margin: 5px;
+            padding: 8px 5px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option:hover {
+            background: #e9ecef;
+        }
+        .option.selected {
+            background: #3498db;
+            color: white;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #27ae60;
+        }
+        .btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .result-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .score-bar {
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .score-fill {
+            height: 100%;
+            border-radius: 15px;
+            transition: width 1s ease-in-out;
+        }
+        .intuition-fill {
+            background: #9b59b6;
+        }
+        .emotion-fill {
+            background: #e74c3c;
+        }
+        .reason-fill {
+            background: #3498db;
+        }
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .result-description {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .result-type {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .intuition-type {
+            color: #9b59b6;
+        }
+        .emotion-type {
+            color: #e74c3c;
+        }
+        .reason-type {
+            color: #3498db;
+        }
+        .balanced-type {
+            color: #2ecc71;
+        }
+        .progress {
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .question-counter {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>แบบทดสอบ "ฉันใช้สมองส่วนไหนมากที่สุด?"</h1>
+        <div class="subtitle">ค้นหาว่าคุณใช้สมองส่วนไหนเป็นหลักในชีวิตประจำวัน - สัญชาติญาณ อารมณ์ หรือเหตุผล</div>
+        
+        <div class="instructions">
+            <strong>คำแนะนำ:</strong> ให้ให้คะแนนแต่ละข้อตั้งแต่ 1-5 ตามนี้<br>
+            ✅ 1 = ไม่ตรงกับฉันเลย &nbsp; ✅ 2 = ตรงกับฉันเล็กน้อย &nbsp; ✅ 3 = ตรงกับฉันปานกลาง<br>
+            ✅ 4 = ตรงกับฉันค่อนข้างมาก &nbsp; ✅ 5 = ตรงกับฉันมากที่สุด
+        </div>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="question-counter" id="questionCounter">คำถามที่ 1 จาก 21</div>
+        
+        <form id="brainTestForm">
+            <!-- คำถามจะถูกเพิ่มโดย JavaScript -->
+        </form>
+        
+        <button class="btn" id="submitBtn" disabled>ดูผลลัพธ์</button>
+        
+        <div class="result" id="resultSection">
+            <h2 class="result-title">ผลการทดสอบของคุณ</h2>
+            
+            <div class="score-label">
+                <span>สัญชาติญาณ</span>
+                <span id="intuitionScore">0</span>
+            </div>
+            <div class="score-bar">
+                <div class="score-fill intuition-fill" id="intuitionBar"></div>
+            </div>
+            
+            <div class="score-label">
+                <span>อารมณ์</span>
+                <span id="emotionScore">0</span>
+            </div>
+            <div class="score-bar">
+                <div class="score-fill emotion-fill" id="emotionBar"></div>
+            </div>
+            
+            <div class="score-label">
+                <span>เหตุผล</span>
+                <span id="reasonScore">0</span>
+            </div>
+            <div class="score-bar">
+                <div class="score-fill reason-fill" id="reasonBar"></div>
+            </div>
+            
+            <div class="result-description" id="resultDescription">
+                <!-- คำอธิบายผลจะถูกเพิ่มโดย JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลคำถาม
+        const questions = [
+            "ฉันมักรู้สึกได้ล่วงหน้าว่าจะเกิดอะไรขึ้นโดยไม่มีเหตุผลชัดเจน",
+            "ฉันรู้สึกคล้อยตามไปกับอารมณ์ของหนังหรือเรื่องราวที่ดู",
+            "ฉันชอบคิดวิเคราะห์อย่างเป็นขั้นเป็นตอนก่อนตัดสินใจ",
+            "ฉันเชื่อใจความรู้สึกแรกเมื่อพบเมื่อเจอคนใหม่ๆ",
+            "อารมณ์ความรู้สึกมักมีผลต่อการตัดสินใจของฉัน",
+            "ฉันต้องมีข้อมูลหรือหลักฐานให้เพียงพอก่อนจึงจะตัดสินใจ",
+            "ฉันมักรู้คำตอบว่าต้องทำอย่างไรได้โดยไม่ต้องคิดมาก",
+            "ฉันเห็นใจผู้อื่นได้ง่ายแม้ไม่เคยเจอสถานการณ์แบบนั้น",
+            "ฉันควบคุมอารมณ์ได้ดีในสถานการณ์ตึงเครียด",
+            "ฉันเชื่อในลางสังหรณ์หรือความรู้สึกภายใน",
+            "ฉันสังเกตอารมณ์ของคนอื่นได้ไวมาก",
+            "ฉันใช้ logic และเหตุผลในการแก้ปัญหา",
+            "คำตอบมักผุดขึ้นมาในหัวโดยไม่รู้ว่าไหนมา",
+            "ฉันรู้สึกได้ถึงบรรยากาศในห้องในทันทีเมื่อเดินเข้าไปในห้อง",
+            "ฉันเชื่อในสิ่งที่พิสูจน์ได้ทางวิทยาศาสตร์",
+            "บางครั้งฉันก็ใช้หัวใจ บางครั้งก็ใช้สมอง สลับไปมา",
+            "ฉันปรับวิธีคิดได้ตามสถานการณ์",
+            "ฉันคิดว่าทั้งสามอย่าง (ความรู้สึก สัญชาติญาณ เหตุผล) สำคัญพอๆ กัน",
+            "ฉันมักคิดมากเกินไปก่อนตัดสินใจ",
+            "ฉันสามารถอธิบายการตัดสินใจของตัวเองได้ทั้งด้วยเหตุผลและความรู้สึก",
+            "ความคิดมักล่องลอยไปเรื่อยๆ โดยไม่ต้องตั้งใจ"
+        ];
+
+        // กลุ่มคำถาม
+        const questionGroups = {
+            intuition: [0, 3, 6, 9, 12, 20],    // ข้อ 1, 4, 7, 10, 13, 21
+            emotion: [1, 4, 7, 10, 13, 15],     // ข้อ 2, 5, 8, 11, 14, 16
+            reason: [2, 5, 8, 11, 14, 16],      // ข้อ 3, 6, 9, 12, 15, 17
+            balance: [17, 18, 19]               // ข้อ 18, 19, 20
+        };
+
+        // คำอธิบายผลลัพธ์
+        const resultDescriptions = {
+            intuition: {
+                title: "นักล่าความจริงแห่งจิตใต้สำนึก",
+                description: "คุณคือผู้ที่ได้ยินเสียงกระซิบจากส่วนลึกของจิตใจ เส้นประสาทของคุณรับรู้รูปแบบที่คนอื่นมองไม่เห็น เหมือนเรดาร์ที่จับสัญญาณแห่งความเป็นไปได้ก่อนใคร<br><br>ชีวิตของคุณเหมือนเรือที่แล่นตามลมแห่ง intuition มือของคุณสัมผัสได้ถึงกระแสพลังงานที่มองไม่เห็น 答案มักมาถึงก่อนคำถามจะจบ<br><br>สิ่งที่คุณนำทางโลกด้วยความรู้สึกในใจที่บอกว่า 'นี่คือทาง' แม้ไม่มีแผนที่"
+            },
+            emotion: {
+                title: "นักเดินทางแห่งมหาสมุทรความรู้สึก",
+                description: "หัวใจของคุณคือคอมพาสที่พาไปสู่ความจริง คุณสัมผัสได้ถึงคลื่นอารมณ์ที่ไหลเวียนระหว่างผู้คน โลกสำหรับคุณคือภาพวาดที่แต่งแต้มด้วยสีสันแห่งความรู้สึก<br><br>ชีวิตของคุณเหมือนดนตรีที่ไม่มีโน้ตบันทึก แต่ทุกคนรู้สึกถึงความไพเราะ<br><br>สิ่งที่คุณนำทางโลกด้วยหัวใจที่เปิดกว้างและความเข้าใจที่ว่า ทุกการกระทำล้วนมีเรื่องราว behind it"
+            },
+            reason: {
+                title: "สถาปนิกแห่งความจริงเชิงตรรกะ",
+                description: "ความคิดของคุณคือเครื่องมือสร้างโลก คุณแยกทุกอย่างออกเป็นส่วนๆ เพื่อเข้าใจความเชื่อมโยงที่ซับซ้อน โลกสำหรับคุณคือ puzzle ที่ต้องประกอบให้เข้าใจ<br><br>ชีวิตของคุณเหมือนสมการคณิตศาสตร์ที่สวยงาม ที่ทุกตัวแปรมีที่มาและที่ไป<br><br>สิ่งที่คุณนำทางโลกด้วยแผนที่และเข็มทิศแห่ง logic ที่พาคุณไปสู่ความจริงที่พิสูจน์ได้"
+            },
+            balanced: {
+                title: "นักบวชแห่งสามพลัง",
+                description: "คุณคือสะพานที่เชื่อมระหว่างสามโลก - โลกแห่งสัญชาติญาณ โลกแห่งอารมณ์ และโลกแห่งเหตุผล คุณเข้าใจว่าทุกเสียงในหัวมีบทบาทของมัน<br><br>ชีวิตของคุณเหมือนวาทยกรที่ควบคุมวงออร์เคสตราแห่งจิตใจ ให้สามพลังทำงานประสานกัน<br><br>สิ่งที่คุณนำทางโลกด้วยสามตาที่มองเห็นทั้งสิ่งที่มองเห็นได้ มองไม่เห็น และสิ่งที่ควรจะเป็น"
+            }
+        };
+
+        // สร้างฟอร์มคำถาม
+        const form = document.getElementById('brainTestForm');
+        const progressBar = document.getElementById('progressBar');
+        const questionCounter = document.getElementById('questionCounter');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        let selectedOptions = new Array(questions.length).fill(0);
+        
+        questions.forEach((question, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.id = `question-${index}`;
+            
+            const questionText = document.createElement('div');
+            questionText.className = 'question-text';
+            questionText.textContent = `${index + 1}. ${question}`;
+            questionDiv.appendChild(questionText);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            for (let i = 1; i <= 5; i++) {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = i;
+                optionDiv.dataset.value = i;
+                optionDiv.dataset.question = index;
+                
+                optionDiv.addEventListener('click', function() {
+                    const questionIndex = parseInt(this.dataset.question);
+                    const value = parseInt(this.dataset.value);
+                    
+                    // ลบการเลือกเดิมในคำถามนี้
+                    const options = this.parentElement.children;
+                    for (let opt of options) {
+                        opt.classList.remove('selected');
+                    }
+                    
+                    // เลือกตัวเลือกใหม่
+                    this.classList.add('selected');
+                    selectedOptions[questionIndex] = value;
+                    
+                    // ตรวจสอบว่าตอบครบทุกข้อแล้วหรือยัง
+                    checkAllAnswered();
+                    updateProgress();
+                });
+                
+                optionsDiv.appendChild(optionDiv);
+            }
+            
+            questionDiv.appendChild(optionsDiv);
+            form.appendChild(questionDiv);
+        });
+        
+        // ฟังก์ชันตรวจสอบว่าตอบครบทุกข้อแล้วหรือยัง
+        function checkAllAnswered() {
+            const allAnswered = selectedOptions.every(value => value > 0);
+            submitBtn.disabled = !allAnswered;
+        }
+        
+        // อัพเดทแถบความคืบหน้า
+        function updateProgress() {
+            const answeredCount = selectedOptions.filter(value => value > 0).length;
+            const progress = (answeredCount / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            questionCounter.textContent = `คำถามที่ ${answeredCount} จาก ${questions.length}`;
+        }
+        
+        // เมื่อกดปุ่มส่งคำตอบ
+        submitBtn.addEventListener('click', function() {
+            calculateResults();
+        });
+        
+        // คำนวณผลลัพธ์
+        function calculateResults() {
+            let intuitionScore = 0;
+            let emotionScore = 0;
+            let reasonScore = 0;
+            let balanceScore = 0;
+            
+            // คำนวณคะแนนสำหรับแต่ละกลุ่ม
+            questionGroups.intuition.forEach(index => {
+                intuitionScore += selectedOptions[index];
+            });
+            
+            questionGroups.emotion.forEach(index => {
+                emotionScore += selectedOptions[index];
+            });
+            
+            questionGroups.reason.forEach(index => {
+                reasonScore += selectedOptions[index];
+            });
+            
+            questionGroups.balance.forEach(index => {
+                balanceScore += selectedOptions[index];
+            });
+            
+            // แสดงผลลัพธ์
+            displayResults(intuitionScore, emotionScore, reasonScore, balanceScore);
+        }
+        
+        // แสดงผลลัพธ์
+        function displayResults(intuition, emotion, reason, balance) {
+            // อัพเดทคะแนน
+            document.getElementById('intuitionScore').textContent = intuition;
+            document.getElementById('emotionScore').textContent = emotion;
+            document.getElementById('reasonScore').textContent = reason;
+            
+            // อัพเดทแถบคะแนน
+            document.getElementById('intuitionBar').style.width = `${(intuition / 30) * 100}%`;
+            document.getElementById('emotionBar').style.width = `${(emotion / 30) * 100}%`;
+            document.getElementById('reasonBar').style.width = `${(reason / 30) * 100}%`;
+            
+            // กำหนดประเภทผลลัพธ์
+            const scores = [
+                { type: 'intuition', score: intuition },
+                { type: 'emotion', score: emotion },
+                { type: 'reason', score: reason }
+            ];
+            
+            // เรียงลำดับตามคะแนน
+            scores.sort((a, b) => b.score - a.score);
+            
+            let resultType = 'balanced';
+            let resultTitle = resultDescriptions.balanced.title;
+            let resultDesc = resultDescriptions.balanced.description;
+            
+            // ตรวจสอบว่ามีคะแนนโดดเด่นในด้านใดด้านหนึ่งหรือไม่
+            if (scores[0].score >= 21 && scores[0].score > scores[1].score + 3) {
+                resultType = scores[0].type;
+                resultTitle = resultDescriptions[resultType].title;
+                resultDesc = resultDescriptions[resultType].description;
+            }
+            
+            // แสดงผลลัพธ์
+            const resultDescElement = document.getElementById('resultDescription');
+            resultDescElement.innerHTML = `
+                <div class="result-type ${resultType}-type">${resultTitle}</div>
+                <div>${resultDesc}</div>
+            `;
+            
+            // แสดงส่วนผลลัพธ์
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // เลื่อนไปยังผลลัพธ์
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // อัพเดทความคืบหน้าเริ่มต้น
+        updateProgress();
+    </script>
+</body>
+</html>
